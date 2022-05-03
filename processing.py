@@ -1,5 +1,5 @@
 
-#libraries needed pandas, numpy, matplotlib, scipy, sklearn, matplotlib, nltk
+#libraries needed pandas, numpy, matplotlib, scipy, sklearn, nltk
 
 from __future__ import division
 import codecs
@@ -164,7 +164,31 @@ all_counter = bag_of_bones_counter + black_house_counter + carrie_counter + it_c
 all_df = word_frequency(all_counter.most_common(100), 1)
 most_common_words = all_df.index.values
 
-all_df.to_csv('data/all_df.csv')
+df_data = []
+for word in most_common_words:
+    bag_of_bones_c = bag_of_bones_counter.get(word, 0)/ bag_of_bones_size
+    black_house_c = black_house_counter.get(word, 0)/ black_house_size
+    carrie_c = carrie_counter.get(word, 0)/ carrie_size
+    it_c = it_counter.get(word, 0)/ it_size
+    misery_c = misery_counter.get(word, 0)/ misery_size
+    salems_lot_c = salems_lot_counter.get(word, 0)/ salems_lot_size
+    song_of_susannah_c = song_of_susannah_counter.get(word, 0)/ song_of_susannah_size
+    the_dark_tower_c = the_dark_tower_counter.get(word, 0)/ the_dark_tower_size
+    the_dead_zone_c = the_dead_zone_counter.get(word, 0)/ the_dead_zone_size
+    the_drawing_of_the_three_c = the_drawing_of_the_three_counter.get(word, 0)/ the_drawing_of_the_three_size
+    the_girl_who_loved_tom_gordon_c = the_girl_who_loved_tom_gordon_counter.get(word,0)/the_girl_who_loved_tom_gordon_size
+    the_gunslinger_c = the_gunslinger_counter.get(word, 0)/the_gunslinger_size
+    the_little_sisters_of_eluria_c = the_little_sisters_of_eluria_counter.get(word, 0)/ the_little_sisters_of_eluria_size
+    the_shining_c = the_shining_counter.get(word, 0)/the_shining_size
+    the_waste_lands_c = the_waste_lands_counter.get(word, 0)/the_waste_lands_size
+    wizard_and_glass_c = wizard_and_glass_counter.get(word, 0)/wizard_and_glass_size
+    df_data.append([word, bag_of_bones_c, black_house_c, carrie_c, it_c, misery_c, salems_lot_c, song_of_susannah_c, the_dark_tower_c, the_dead_zone_c, the_drawing_of_the_three_c, the_girl_who_loved_tom_gordon_c, the_gunslinger_c, the_little_sisters_of_eluria_c, the_shining_c, the_waste_lands_c, wizard_and_glass_c ]) 
+
+dist_df = pd.DataFrame(data= df_data, index=most_common_words)
+dist_df.index.name = 'Most Common Words'
+#dist_df.sort_values("Relative frequency difference", ascending=False, inplace=True)
+dist_df.head(10)
+dist_df.to_csv('data/dist_df.csv')
 
 
 
