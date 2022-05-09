@@ -16,6 +16,7 @@ from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import WordPunctTokenizer
 
 import matplotlib.pyplot as plt
+import glob
 
 
 
@@ -26,6 +27,16 @@ from nltk.corpus import stopwords
 
 ### READ DATA ###
 
+text_paths = glob.glob("data/*.txt")
+books = []
+
+
+for i in text_paths:
+    with codecs.open(i, 'r', encoding='utf-8') as f:
+        text = f.read()
+        books.append(text)
+
+print("Reading books...")
 with codecs.open('data/Stephen_King_BagOfBones.txt', 'r', encoding='utf-8', errors='ignore') as f:
     bag_of_bones = f.read()
 with codecs.open('data/Stephen_King_BlackHouse.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -91,18 +102,19 @@ def word_frequency(counter,text):
     return df
 
 ### ANALYSIS ### 
-
+print("Analyzing books...", carrie)
 #calculate & save most common words for each book 
-bag_of_bones_counter, bag_of_bones_size = token_counter(bag_of_bones)
+bag_of_bones_counter, bag_of_bones_size = token_counter(books[0])
 bag_of_bones_df = word_frequency(bag_of_bones_counter.most_common(100), bag_of_bones_size)
 bag_of_bones_df.to_csv('data/bag_of_bones_df.csv')
 
 #for all the books, calculate the most common words
-black_house_counter, black_house_size = token_counter(black_house)
+black_house_counter, black_house_size = token_counter(books[1])
 black_house_df = word_frequency(black_house_counter.most_common(100), black_house_size)
 black_house_df.to_csv('data/black_house_df.csv')
 
 carrie_counter, carrie_size = token_counter(carrie)
+print(carrie_counter)
 carrie_df = word_frequency(carrie_counter.most_common(100), carrie_size)
 carrie_df.to_csv('data/carrie_df.csv')
 
@@ -183,6 +195,7 @@ for word in most_common_words:
     the_waste_lands_c = the_waste_lands_counter.get(word, 0)/the_waste_lands_size
     wizard_and_glass_c = wizard_and_glass_counter.get(word, 0)/wizard_and_glass_size
     df_data.append([word, bag_of_bones_c, black_house_c, carrie_c, it_c, misery_c, salems_lot_c, song_of_susannah_c, the_dark_tower_c, the_dead_zone_c, the_drawing_of_the_three_c, the_girl_who_loved_tom_gordon_c, the_gunslinger_c, the_little_sisters_of_eluria_c, the_shining_c, the_waste_lands_c, wizard_and_glass_c ]) 
+
 
 dist_df = pd.DataFrame(data= df_data, index=most_common_words)
 dist_df.index.name = 'Most Common Words'
