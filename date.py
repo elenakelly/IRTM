@@ -32,7 +32,6 @@ for path in text_paths:
     print("\n")
 
     date = [ent.text for ent in doc.ents if ent.label_ == 'DATE']
-    location = [ent.text for ent in doc.ents if ent.label_ == 'LOC']
 
     print("Finding the locations and the dates...")
     #print("date  ",date )
@@ -42,12 +41,10 @@ for path in text_paths:
 
     index_to_delete=[]
     list_of_dates=date[0:len(date)]
-    list_of_locations=location[0:len(location)]
 
     for i in range(len(list_of_dates)):
         list_of_dates[i]=re.sub(r'\'s','',list_of_dates[i])
         list_of_dates[i].strip()
-        list_of_dates[i]=re.sub(r'Mrs|Mr|Ms','',list_of_dates[i]).strip()
         if re.findall(r'[^a-zA-Z_ ]',list_of_dates[i])!=[]:
             index_to_delete.append(i)
         elif len(re.split('\W',list_of_dates[i]))<2:
@@ -118,7 +115,8 @@ for index, row in dates_connections.iterrows():
         
 weights = nx.get_edge_attributes(G,'weight').values()
 weights = [float(i)/max(list(weights)) for i in list(weights)]
-pos = nx.spring_layout(G)
+pos = nx.circular_layout(G)
+
 
 nx.draw(G,
         pos,
@@ -127,7 +125,7 @@ nx.draw(G,
 
 import matplotlib.pyplot as plt
 
-plt.savefig('before.png')
+
 l,r = plt.xlim()
 plt.xlim(l-0.2,r+0.2)
-plt.savefig('after.png')
+plt.savefig('dates.png')
