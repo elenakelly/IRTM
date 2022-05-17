@@ -79,7 +79,7 @@ print("Collect characters from all novels")
 print("\n")
 #all_characters.sort_values(by='character', ascending=False, inplace=True)
 print(all_characters.head())
-all_characters.to_csv('all_characters.csv', index=False)
+all_characters.to_csv('csv/all_characters.csv', index=False)
 
 #prints all the characters and their frequencies
 '''k = set(list(all_characters.character))
@@ -95,18 +95,18 @@ print("\n")
 print("example ","\n",example)
 
 
-#characters = all_characters[all_characters['character'].isin(all_characters)].sort_values(by="character")
-print("\n")
+#Create a network of characters
 
-print("CHARACTERS",characters)
 print("\n")
+mentions = pd.read_csv('csv/all_characters.csv')
+mentioned_character = list(mentions.character)
+
+characters = all_characters[all_characters['character'].isin(mentioned_character)].sort_values(by = 'character')
 
 char_connections = pd.DataFrame(columns=['novel','neighbour','strength'])
 k = sorted(list(set(all_characters.novel)))
 print("char", k)
 print("\n")
-
-
 
 
 for i in range (len(k)):
@@ -116,7 +116,7 @@ for i in range (len(k)):
         char_connections.loc[len(char_connections)] = [k[i],k[j],s]
 
 print("Character connetion",char_connections)
-char_connections.to_csv('char_connections.csv', index=False)
+char_connections.to_csv('csv/char_connections.csv', index=False)
 
 G = nx.Graph()
 for index, row in char_connections.iterrows():
@@ -125,7 +125,7 @@ for index, row in char_connections.iterrows():
         
 weights = nx.get_edge_attributes(G,'weight').values()
 weights = [float(i)/max(list(weights)) for i in list(weights)]
-pos = nx.spring_layout(G)
+pos = nx.circular_layout(G)
 
 nx.draw(G,
         pos,
@@ -134,14 +134,13 @@ nx.draw(G,
 
 import matplotlib.pyplot as plt
 
-plt.savefig('before.png')
+
 l,r = plt.xlim()
 plt.xlim(l-0.2,r+0.2)
-plt.savefig('after.png')
+plt.savefig('pngs/charconnections.png')
 
 
-
-
+# Book connections
 novel_names=[]
 space = " "
 for i in k:
@@ -172,29 +171,28 @@ name_connections.reset_index( inplace=True)
 name_connections.columns=['novel','neighbour','strength']
 print("\n")
 print(name_connections)
-name_connections.to_csv('name_connections.csv', index=False)
+name_connections.to_csv('csv/name_connections.csv', index=False)
 
-G = nx.Graph()
+G1 = nx.Graph()
 for index, row in name_connections.iterrows():
     if row['strength']>0:
-        G.add_edge(row['novel'],row['neighbour'],weight=row['strength'])
+        G1.add_edge(row['novel'],row['neighbour'],weight=row['strength'])
 
-edges = G.edges()       
-weights = nx.get_edge_attributes(G,'weight').values()
+edges = G1.edges()       
+weights = nx.get_edge_attributes(G1,'weight').values()
 weights = [float(i)/max(list(weights)) for i in list(weights)]
 
     
-pos = nx.circular_layout(G)
-edges = G.edges()
-colors = [G[u][v]['weight']**0.9 for u, v in edges]
+pos = nx.circular_layout(G1)
+edges = G1.edges()
+colors = [G1[u][v]['weight']**0.9 for u, v in edges]
 cmap = matplotlib.cm.get_cmap('Blues')
 
-nx.draw(G,
+nx.draw(G1,
         pos,
         with_labels=True, 
         width=list(weights),
-        edge_color='black', 
-        node_color="white", edge_cmap=cmap)
+         edge_cmap=cmap)
 
 
 
@@ -202,7 +200,7 @@ ax = plt.gca()
 ax.margins(0.25)
 plt.axis("equal")
 plt.tight_layout()
-plt.savefig('bookConnections.png')
+plt.savefig('pngs/bookConnections.png')
 
 
 
