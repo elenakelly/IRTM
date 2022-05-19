@@ -1,20 +1,11 @@
 import string
 from collections import Counter
-
+import os
+from itertools import groupby
 import matplotlib.pyplot as plt
 
-# reading text file
-text = open('./newdata/Stephen_King_BagOfBones copy.txt', encoding="utf-8").read()
-
-# converting to lowercase
-lower_case = text.lower()
-
-# Removing punctuations
-cleaned_text = lower_case.translate(str.maketrans('', '', string.punctuation))
-
-# splitting text into words
-tokenized_words = cleaned_text.split()
-
+directory = 'newdata'
+#color =
 stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself",
               "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself",
               "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these",
@@ -26,39 +17,41 @@ stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you"
               "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than",
               "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"]
 
-# Removing stop words from the tokenized words list
-final_words = []
-for word in tokenized_words:
-    if word not in stop_words:
-        final_words.append(word)
+# iterate over files in
+# that directory
+for book in os.listdir(directory):
+    print(book)
+    f = os.path.join(directory, book)
+    if os.path.isfile(f):
+        print(f)
+    text = open(f, encoding="utf-8").read()
+    lower_case = text.lower()
+    cleaned_text = lower_case.translate(str.maketrans('', '', string.punctuation))
+    tokenized_words = cleaned_text.split()
 
-# NLP Emotion Algorithm
-# 1) Check if the word in the final word list is also present in emotion.txt
-#  - open the emotion file
-#  - Loop through each line and clear it
-#  - Extract the word and emotion using split
+    final_words = []
+    for word in tokenized_words:
+        if word not in stop_words:
+            final_words.append(word)
 
-# 2) If word is present -> Add the emotion to emotion_list
-# 3) Finally count each emotion in the emotion list
+    emotion_list = []
+    emotions_color = []
+    with open('emotions.txt', 'r') as file:
+        for line in file:
+            clear_line = line.replace("\n", '').replace(",", '').replace("'", '').strip()
+            word, emotion = clear_line.split(':')
 
-emotion_list = []
-with open('emotions.txt', 'r') as file:
-    for line in file:
-        clear_line = line.replace("\n", '').replace(",", '').replace("'", '').strip()
-        word, emotion = clear_line.split(':')
+            if word in final_words:
+                emotion_list.append(emotion)
 
-        if word in final_words:
-            emotion_list.append(emotion)
+    w = Counter(emotion_list)
+    most_common_emotions = w.most_common(10)
+    emotions = [x[0] for x in most_common_emotions]
+    frequency = [x[1] for x in most_common_emotions]
+    print(book, '=> ', w.most_common(10))
+    fig, ax1 = plt.subplots()
+    ax1.bar(emotions, frequency, color='red')
+    fig.autofmt_xdate()
+    #plt.savefig(book + '.png')
+    plt.show()
 
-print(emotion_list)
-w = Counter(emotion_list)
-print(w)
-print("Most common = ", w.most_common(10))
-
-# Plotting the emotions on the graph
-
-fig, ax1 = plt.subplots()
-ax1.bar(w.keys(), w.values())
-fig.autofmt_xdate()
-plt.savefig('graph.png')
-plt.show()
